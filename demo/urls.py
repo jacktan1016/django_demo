@@ -24,4 +24,5 @@ urlpatterns = [
     # 总路由找子视图
     url(r'^auser/',include('auser.urls')),
     url(r'^brouter/',include('brouter.urls',namespace='brouter')),
+    url(r'^brequest/',include('brequest.urls')),
 ]

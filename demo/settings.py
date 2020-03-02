@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # 这是新注册的
     'auser.apps.AuserConfig',
     'brouter.apps.BrouterConfig',
+    'brequest.apps.BrequestConfig',
 ]
 
 MIDDLEWARE = [

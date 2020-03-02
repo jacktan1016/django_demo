@@ -22,3 +22,17 @@ STATICFILES_DIRS=[os.path.join(BASE_DIR,"static_files")]
 两种写法:
 有namespace reverse('namespace:login')
 没有namespace  reverse('login')
+
+--------------------------------------------------------------------------------
+
+第二天:
+request对象:
+1、请求时路径为/2008/beijing
+url(r'^login/(\d+)/([a-zA-Z]+)',views.login)
+
+为参数指定名字?P<>
+url(r'^login/(?P<year>\d+)/(?P<city>[a-zA-Z]+)',views.login)
+
+获取参数
+login(request,year,city):
+	print("year:",year)
