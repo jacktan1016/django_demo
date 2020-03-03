@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'brouter.apps.BrouterConfig',
     'brequest.apps.BrequestConfig',
     'ccookie.apps.CcookieConfig',
+    'dtemplates.apps.DtemplatesConfig',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 注册中间件
+    'middleware.simple_middleware',
 ]
 
 ROOT_URLCONF = 'demo.urls'
@@ -60,7 +63,7 @@ ROOT_URLCONF = 'demo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

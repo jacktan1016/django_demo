@@ -149,3 +149,101 @@ cookie:
  这里有个Bug ：取消redis的登录验证，不然django会报错，权限校验！
  redis里的key :1:django.contrib.sessions.cachewpjutnv42gnniisfqy1uxtv4hg2sj5x4
  对应的value:"\x80\x04\x95\x14\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x04name\x94\x8c\x06tanwen\x94s."
+
+ ---------------------------------------------------------------------------------------------
+ 类视图:
+ 1、views里面
+ class LoginView(View):   #继承View
+ 	def get(self,get):
+ 		return HttpResponse("类视图---get方法")
+	def post(self,post):
+		return HttpResponse("类视图---post方法")
+def index(request):
+	return HttpResponse(".....")
+
+# LoginView.as_view()=index
+url(r'^index/$',views.LoginView.as_view(),name='index')
+
+>>> from django.http.request import HttpRequest
+>>> from django.http.response import HttpResponse
+>>> from ccookie.views import LoginView
+>>> login_object = LoginView()
+>>> request = HttpRequest()
+>>> request.method='get'
+>>> login_method = getattr(login_object,request.method)
+>>> login_method
+<bound method LoginView.get of <ccookie.views.LoginView object at 0x0000020A9B040888>>
+>>> login_method(request)
+<HttpResponse status_code=200, "text/html; charset=utf-8">
+>>> response = login_method(request)
+>>> response.content.decode('utf-8')
+'类视图----get方法'
+
+2、类视图使用装饰器
+第一种:
+装饰器里的wrapper方法添加self，然后将装饰器放在类的方法上面
+第二种:
+装饰器直接装饰url中的LoginView.as_view(),因为这返回的是一个方法，可以直接装饰
+第三种
+利用django框架的装饰器，就可以对类视图直接使用装饰器
+#my_decorator是自己定义的装饰器,dispatch是原始代码中获取的请求方法
+@method_decorator(my_decorator,name='dispatch')  
+
+3、类视图添加扩展类Mixin
+Mixin扩展多继承原理
+class DecoratorMixin:
+	@classmethod
+	def as_view(cls,*args,**kwargs):
+		# 这里是没有as_view()
+		view = super().as_view(*args,**kwargs)
+		view = my_decorator(view)
+		return view
+
+# 利用多继承的方法将View的as_view()方法给DecoratorMixin类里的方法，这是一种思想
+class LoginView_Decorator_MiXin(DecoratorMixin,View):
+	def get(self,get):
+		return HttpResponse("类视图--DecoratorMixin--get方法")
+	def post(self,post):
+		return HttpResponse("类视图--DecoratorMixin--post方法")
+
+4、中间件：提供共性功能
+#定义自己的中间件，参数都是写死的,get_response,和request
+def simple_middleware(get_response):
+	# 初始化打印2次
+	print("初始化-------")
+
+	def middleware(request):
+		print("处理对象请求之前-----")
+		response = get_response(request)
+		print("处理对象请求之后-------")
+		return response
+	return middleware
+中间件写完之后，需要在settings里面去注册
+
+在请求视图被处理前，中间件由上至下依次执行
+在请求视图被处理后，中间件由下至上依次执行
+
+5、django自带模板
+1、创建templates文件夹
+2、settings.py里面在列表里面加入
+
+要返回html，需要用到render(request,htmlname,context) #context必须是字典
+模板小结:
+1、views里的render给前端传递的参数必须是 context = 字典,context为上下文的意思
+2、html里直接调用字典里的键名，就可以调用值了，如:  {{ name }}
+3、如果传来的context里的一个键对应的值是列表或者是字典，我们不能用sons[0]或者wife['name']
+	一律用sons.或者wife.name去获取值
+4、语法的格式，没有冒号,只有一个{},并且必须加%，而且要有结束语，如
+{% for i in sons %}
+{% empty %}
+	<h2>如果列表不存在就不执行</h2>
+{{forloop.counter }}  从1开始   {{forloop.counter0 }}  从0开始
+{% endfor %}
+最重要一点，>,<,=类似左右两边必须空格
+
+6、django自带模板过滤器
+{{ names | default:"没有值就是为false"}}
+{{ sons | length }}
+{{ date_time | date:"Y-m-d"}}
+
+{{ data | safe }}    "data":"<ahref='http://www.baidu.com'>百度链接</a>"可以在前端展示为一个链接，否则是一个字符串

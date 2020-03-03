@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>模板操作</title>
+</head>
+<body>
+
+	{{ sons | length}}<br>
+	{{ name | default:"没有值就是default"}}<br>
+	{{ date_time | date:"Y-m-d"}}<br>
+	{{ data }}<br>
+	{{ data | safe }}<br>
+
+	<h1>hello,world</h1>
+	<h1>{{ name }}</h1>
+	<h1>{{ age }}</h1>
+	<h1>{{ sons.0 }}</h1>
+	<h1>{{ sons.1 }}</h1>
+	<h1>{{ wife.name }}</h1>
+
+	{% for temp in sons %}
+		<h2>{{ forloop.counter }}-----{{ temp }}</h2>
+		{% empty %}
+		<h2>sorry,没有你说的模板哦</h2>
+	{% endfor %}
+
+	{% if name > 18 %}
+		<h2>成年人</h2>
+	{% else %}
+		<h2>未成年人</h2>
+	{% endif %}
+</body>
+</html>

@@ -18,3 +18,4 @@ def index(request):
 
 	# 4、返回对象
 	return HttpResponse("hello 这是我的第一次使用django项目")
+	

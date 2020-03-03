@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^brouter/',include('brouter.urls',namespace='brouter')),
     url(r'^brequest/',include('brequest.urls')),
     url(r'^ccookie/',include('ccookie.urls')),
+    url(r'^dtemplates/',include('dtemplates.urls')),
 ]
