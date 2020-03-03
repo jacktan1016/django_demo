@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'auser.apps.AuserConfig',
     'brouter.apps.BrouterConfig',
     'brequest.apps.BrequestConfig',
+    'ccookie.apps.CcookieConfig',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,17 @@ USE_TZ = True
 # 静态文件
 STATIC_URL = '/static/'
 STATICFILES_DIRS=[os.path.join(BASE_DIR,"static_files")]
+
+# 配置django-redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+# session_engine
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

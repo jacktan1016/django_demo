@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^auser/',include('auser.urls')),
     url(r'^brouter/',include('brouter.urls',namespace='brouter')),
     url(r'^brequest/',include('brequest.urls')),
+    url(r'^ccookie/',include('ccookie.urls')),
 ]

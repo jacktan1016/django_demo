@@ -109,3 +109,43 @@ def response_redirect(request):
 
 	#定向到其他域名
 	return redict('http://www.baidu.com')
+
+9、操作cookie   set_cookie和COOKIES  设置和取
+def cookie(request):
+	response = HttpResponse("操作cookie")
+	# 设置cookie
+	response.set_cookie('itcast','tanwen',max_age=30)  # key,value,max_age表示有效时间
+
+	# 获取cookie
+	cookie = request.COOKIES
+	print(cookie)  # 字典类型
+	return response
+cookie:
+1、身份识别
+2、有限制4K大小
+3、保持会话
+
+10、session
+ 1、session共享:
+  用户去各个应用模块时(分布式不同服务器)，去redis里去找sessionid，判断状态
+ 2、依赖cookie(不同的用户有不同的会话)
+ session的配置
+ redis :
+ select 1  # 切换到1数据库
+ # 设置session
+ request.session['name'] = 'ttt'
+ # 获取session
+ print(request.session['name'])
+ #删除session
+ 1 删除指定键和值
+ del request.session['name']
+ 2 删除所有的键和值
+ request.session.clear()
+ 3 删除整条数据
+ request.session.flush()
+
+ 浏览器--->服务器,服务器会生成自己命名客户的session键值对，存储在redis，同时会给客户端一个随机码。
+ 在redis里面，键是django框架set名字和随机码组合。电脑上设置的值只是redis值得一部分
+ 这里有个Bug ：取消redis的登录验证，不然django会报错，权限校验！
+ redis里的key :1:django.contrib.sessions.cachewpjutnv42gnniisfqy1uxtv4hg2sj5x4
+ 对应的value:"\x80\x04\x95\x14\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x04name\x94\x8c\x06tanwen\x94s."
