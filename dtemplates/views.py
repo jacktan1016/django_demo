@@ -18,4 +18,4 @@ def djangoindex(request):
 		"data":"<a href='http://www.baidu.com'>百度链接</a>"
 
 	}
-	return render(request,'hello.html',context=content)
+	return render(request,'son.html',context=content)

@@ -247,3 +247,134 @@ def simple_middleware(get_response):
 {{ date_time | date:"Y-m-d"}}
 
 {{ data | safe }}    "data":"<ahref='http://www.baidu.com'>百度链接</a>"可以在前端展示为一个链接，否则是一个字符串
+
+6、自定义模板文件
+  1、在模块中创建一个package包，包名叫templatetags,然后新建py文件
+  2、py文件中自己定义一个过滤方法，但是必须注册
+  3、html中加载{% load oddfilter %}
+
+7、继承模板
+	子模板的内容
+	{% extends "father.html" %}
+	{% block ttt %}
+	{{ block.super }}
+	{% endblock ttt %}
+
+--------------------------------------------------------------------------------------------
+数据库：增删改查
+配置数据库：
+1、项目文件得init里面配置mysql，使得项目开始时就读取mysql
+2、setting里设置mysql账户密码，和哪个数据库
+3、mysql创建数据库
+
+枚举
+GENDER_CHOICES = (
+        (0, 'female'),
+        (1, 'male')
+    )
+hgender = models.SmallIntegerFiled(choices = GENDER_CHOICES,default=0,verbose_name="性别")
+# 关联外键                                         级联操作
+hbook = models.ForeignKey(BookInfo,on_delete=models.CASCADE,verbose_name="图书")
+
+增加:
+b =BookInfo()
+b.btitle="xx"
+b.pub_date = date(1990,1,1)
+b.save()
+删除:(首先要找到删哪个)
+b = BookInfo.objects.get(id=1)
+b.delete()
+修改:(首先要找到修改哪个)
+b = BookInfo.objects.get(id=1)
+b.btitle= "hah"
+b.save()
+
+查询:
+1、基本查询 get all count
+2、过滤查询
+	filter  得到的结果个列表
+	BookInfo.objects.filter(id=1)
+	取反
+	BookInfo.objects.exlude(id=1)
+	大于 gt，小于lt
+	BookInfo.objects.filter(id__gt=1)  # 想要过滤，肯定要知道凭什么东西过滤--字段，过滤条件__
+	大于等于gte，小于等于lte   (equal)
+	在什么范围内
+	BookInfo.objects.filter(id__in=[1,3,5])  # id 在1，3，5中查询
+	包含什么
+	BookInfo.objects.filter(id__contains='天龙')
+	开始
+	BookInfo.objects.filter(btitle__startswith="天")
+	结尾
+	BookInfo.objects.filter(btitle__endswith="部")
+	空查询
+	BookInfo.objects.filter(btitle__isnull=False)
+	日期查询
+	BookInfo.objects.filter(bpub_date__year=1991)
+	BookInfo.objects.filter(bpub_date__gt=date(1991,1,1))
+
+查询为属性和属性之间对比，或者多个组合查询时
+1、导包
+2、属性和属性之间对比
+	BookInfo.objects.filter(bread__gt=F('bcomment'))
+	BookInfo.objects.filter(bread__gt=F(bcomment)*2)  # 还可以用算法比较
+3、多个条件组合
+	BookInfo.objects.filter(btitle__gt=1,bread__gt=10) # 默认就为与得关系
+	BookInfo.objects.filter(Q(btitle__gt=1) | Q(bread__gt=10))  # 或得关系
+
+聚合查询和排序:
+聚合查询
+使用aggregate()过滤器调用聚合函数--合函数包括：Avg 平均，Count 数量，Max 最大，Min 最小，Sum 求和
+BookInfo.objects.aggregate(Sum('id'))  
+排序 
+BookInfo.objects.all().order_by('bread')
+
+关联查询
+# 一本书里对应得英雄
+book = BookInfo.objects.get(id=1)
+book.heroinfo_set.all()     # 类小写_set.all()  all是一般查询
+# 英雄对应数据
+hero = HeroInfo.objects.get(id=2)
+hero.hbook      #hbook是关联外键得键，这里直接写就可以知道书名了
+hero.hbook_id   # 这里是得到Id，在通过id找书名，需要2步
+
+关联过滤查询
+# 查谁谁在前面，并且如果类中有外键就写外键，没外键就写对应类名
+# 查询书名为“天龙八部”的所有英雄。
+HeroInfo.objects.filter(hbook__btitle="天龙八部")
+# 查询图书阅读量大于30的所有英雄
+HeroInfo.objects.filter(hbook__bread__gt=30)
+# 查询图书，要求图书英雄为"孙悟空"
+BookInfo.objects.filter(heroinfo__hname="孙悟空")
+# 查询图书，要求图书中英雄的描述包含"八"
+BookInfo.objects.filter(heroinfo__hname__contains="八")
+
+自定义管理器
+1、不爽就重写它的方法
+2、添加新的功能
+首先在modles里面定义管理器类
+class BookManager(models.Manager):  #继承的是models.Manager
+	def add_book(self,title,date):
+	 	book = BookInfo()
+        book.btitle = title
+        book.bpub_date = date
+        book.save()
+        return book
+class BookInfo(models.Model): # 继承的是models.Model
+	books = BookManager()		# 通过books = BookManager() 让两者之间产生关系
+
+shell里面 BookInfo.books.add_book("ss",date(1991,2,2))
+
+
+admin
+账户和密码
+admin   admin123
+admin注册  ： admin.site.register(HeroInfo) 注册模块
+
+
+关联对象
+
+# 上传图片
+1、下包
+2、image字段
+3、上传图片会上传到服务器，数据库存着的是图片路径

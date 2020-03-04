@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>son的模板</title>
+</head>
+<body>
+
+
+	{% extends "father.html" %}
+	{% block ttt %}
+	{{ block.super }}
+	{% endblock ttt %}
+	
+</body>
+</html>
